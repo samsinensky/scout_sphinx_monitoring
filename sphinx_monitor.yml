@@ -1,0 +1,11 @@
+options:
+     search_log_path:
+       name: Searchd log path
+       notes: This is the path to the log file
+       default: /log
+
+     query_log_path:
+       name: Query log path
+       notes: This is the path to the query log
+       default: /log
+       

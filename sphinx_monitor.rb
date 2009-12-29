@@ -82,6 +82,7 @@ class SphinxMonitor < Scout::Plugin
      rescue Exception => error
        return error("Error while processing searchd log:\n#{error.class}: #{error.message}", error.backtrace.join("\n"))
      end
+     remember(:last_request_time, Time.now)
      report(report_data)
   end
 private

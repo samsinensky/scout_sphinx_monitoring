@@ -1,0 +1,7 @@
+Monitors Sphinx for the following metrics by looking at the searchd logs
+1) Regular Report
+  average query rate
+  average query time
+  average results returned
+  index rebuild
+  average time per rebuild

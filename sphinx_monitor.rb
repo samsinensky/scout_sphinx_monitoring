@@ -4,21 +4,24 @@ require 'elif'
 class SphinxMonitor < Scout::Plugin
   
   def build_report
+    
+    #test command  = scout test sphinx_monitor.rb query_log_path=/Users/sam/Desktop/query.log.bak search_log_path=/Users/sam/Desktop/searchd.log.bak
+    
      #taken from rails monitor
      #http://github.com/highgroove/scout-plugins/raw/master/rails_requests/rails_requests.rb
      patch_elif
      
      #add option for searchd.log to get data for index rotations
-     search_log_path = option(:search_log_path) || #'/Users/sam/Desktop/searchd.log.bak'
+     search_log_path = option(:search_log_path)
      
      #add an option to specify the query log path
-     query_log_path =  option(:query_log_path) || #'/Users/sam/Desktop/query.log.bak'
+     query_log_path =  option(:query_log_path)
      
      #change 
-     last_run = Time.now() - 10*3600 || memory(:last_request_time)
+     last_run = Time.now() - 14*3600 || memory(:last_request_time)
      
      
-     error("LR #{search_log_path} #{option(:query_log_path}")
+     error("LR #{search_log_path} #{query_log_path}")
      #in seconds or amount/second
      report_data = {
        :num_queries => 0,
@@ -26,7 +29,6 @@ class SphinxMonitor < Scout::Plugin
        :average_results_returned => 0,
        :index_rebuilds => 0,
        :average_time_per_rebuild => 0,
-       :last_run => last_run
      }
      
      #calculate the stats based on queries, rate, avg_time and average results returned

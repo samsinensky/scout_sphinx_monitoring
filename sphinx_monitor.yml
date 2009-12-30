@@ -5,7 +5,4 @@ options:
   query_log_path:
     name: Query log path
     notes: This is the path to the query log
-  a:
-    name: test
-    notes: testing stuff
        

@@ -1,6 +1,6 @@
 require 'time'
 
-
+#built at Code and Beats v1 12/29/09
 class SphinxMonitor < Scout::Plugin
   
   needs 'elif'

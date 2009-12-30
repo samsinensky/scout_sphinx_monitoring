@@ -1,7 +1,9 @@
 require 'time'
-require 'elif'
+
 
 class SphinxMonitor < Scout::Plugin
+  
+  needs 'elif'
   
   def build_report
     
@@ -18,8 +20,6 @@ class SphinxMonitor < Scout::Plugin
      #change 
      last_run = Time.now() - 14*3600 || memory(:last_request_time)
      
-     
-     error("LR #{search_log_path} #{query_log_path}")
      #in seconds or amount/second
      report_data = {
        :num_queries => 0,

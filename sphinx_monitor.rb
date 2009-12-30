@@ -1,9 +1,8 @@
-require 'time'
-
 #built at Code and Beats v1 12/29/09
 class SphinxMonitor < Scout::Plugin
   
   needs 'elif'
+  needs 'time'
   
   def build_report
     
@@ -22,7 +21,7 @@ class SphinxMonitor < Scout::Plugin
        :average_query_time => 0,
        :average_results_returned => 0,
        :index_rebuilds => 0,
-       :average_time_per_rebuild => 0,
+       :average_time_per_rebuild => 0
      }
      
      #calculate the stats based on queries, rate, avg_time and average results returned

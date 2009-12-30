@@ -11,7 +11,7 @@ class SphinxMonitor < Scout::Plugin
     
      #taken from rails monitor
      #http://github.com/highgroove/scout-plugins/raw/master/rails_requests/rails_requests.rb
-     patch_elif
+     #patch_elif
      
      search_log_path = option(:search_log_path)
      

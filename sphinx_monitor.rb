@@ -8,10 +8,6 @@ class SphinxMonitor < Scout::Plugin
   def build_report
     
     #test command  = scout test sphinx_monitor.rb query_log_path=/Users/sam/Desktop/query.log.bak search_log_path=/Users/sam/Desktop/searchd.log.bak
-    
-     #taken from rails monitor
-     #http://github.com/highgroove/scout-plugins/raw/master/rails_requests/rails_requests.rb
-     #patch_elif
      
      search_log_path = option(:search_log_path)
      
@@ -118,17 +114,6 @@ private
       :intermediate
     end
     LogData.new(Time.parse(time), step)
-  end
-  
-  #taken from rails monitor
-  #http://github.com/highgroove/scout-plugins/raw/master/rails_requests/rails_requests.rb
-  def patch_elif
-    if Elif::VERSION < "0.2.0"
-      Elif.send(:define_method, :pos) do
-        @current_pos +
-        @line_buffer.inject(0) { |bytes, line| bytes + line.size }
-      end
-    end
   end
   
 end

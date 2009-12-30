@@ -11,10 +11,8 @@ class SphinxMonitor < Scout::Plugin
      #http://github.com/highgroove/scout-plugins/raw/master/rails_requests/rails_requests.rb
      patch_elif
      
-     #add option for searchd.log to get data for index rotations
      search_log_path = option(:search_log_path)
      
-     #add an option to specify the query log path
      query_log_path =  option(:query_log_path)
      
      #change 
@@ -64,7 +62,7 @@ class SphinxMonitor < Scout::Plugin
      #calculate the index rotation stats, only for index rotations that occur completely in the interval
      total_rotations = 0
      total_length_rotations = 0
-     finish = nil
+     finish_time = nil
      begin
        Elif.foreach(search_log_path) do |line|
          line_data = parse_log_line(line)
@@ -74,11 +72,11 @@ class SphinxMonitor < Scout::Plugin
            if finish
              if line_data.step == :start
                total_rotations += 1
-               total_length_rotations += finish.to_f - line_data.timestamp.to_f
-               finish = nil
+               total_length_rotations += finish_time.to_f - line_data.timestamp.to_f
+               finish_time = nil
              end
            else
-             finish = line_data.timestamp if line_data.step == :finish
+             finish_time = line_data.timestamp if line_data.step == :finish
            end
          end
        end

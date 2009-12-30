@@ -12,7 +12,7 @@ class SphinxMonitor < Scout::Plugin
      
      query_log_path =  option(:query_log_path)
      
-     #change 
+     #change after testing
      last_run = Time.now() - 14*3600 || memory(:last_request_time)
      
      #in seconds or amount/second
@@ -85,7 +85,8 @@ class SphinxMonitor < Scout::Plugin
      rescue Exception => error
        return error("Error while processing searchd log:\n#{error.class}: #{error.message}", error.backtrace.join("\n"))
      end
-     # the time the
+     # the time
+     # should be fixed so that it stores the time of the last log entry from both logs
      remember(:last_request_time, Time.now)
      report(report_data)
   end

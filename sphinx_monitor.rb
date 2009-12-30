@@ -69,7 +69,7 @@ class SphinxMonitor < Scout::Plugin
          if line_data.timestamp.to_f <= last_run.to_f
            break
          else
-           if finish
+           if finish_time
              if line_data.step == :start
                total_rotations += 1
                total_length_rotations += finish_time.to_f - line_data.timestamp.to_f

@@ -1,24 +1,32 @@
 require 'time'
+require 'elif'
 
 class SphinxMonitor < Scout::Plugin
+  
   def build_report
-     needs "elif"
+     #taken from rails monitor
+     #http://github.com/highgroove/scout-plugins/raw/master/rails_requests/rails_requests.rb
+     patch_elif
      
      #add option for searchd.log to get data for index rotations
-     search_log_path = option(:query_log_path)
+     search_log_path = option(:search_log_path) || #'/Users/sam/Desktop/searchd.log.bak'
      
      #add an option to specify the query log path
-     query_log_path = option(:query_log_path)
+     query_log_path =  option(:query_log_path) || #'/Users/sam/Desktop/query.log.bak'
      
-     last_run = memory(:last_request_time) || Time.now
+     #change 
+     last_run = Time.now() - 10*3600 || memory(:last_request_time)
      
+     
+     error("LR #{search_log_path} #{option(:query_log_path}")
      #in seconds or amount/second
      report_data = {
        :num_queries => 0,
        :average_query_time => 0,
        :average_results_returned => 0,
        :index_rebuilds => 0,
-       :average_time_per_rebuild => 0
+       :average_time_per_rebuild => 0,
+       :last_run => last_run
      }
      
      #calculate the stats based on queries, rate, avg_time and average results returned
@@ -31,7 +39,7 @@ class SphinxMonitor < Scout::Plugin
        Elif.foreach(query_log_path) do |line|
          #extract the date form the line and make sure it occured after last_run
          line_data = parse_query_line(line)
-         if line_data.timestamp.to_f <= last_run
+         if line_data.timestamp.to_f <= last_run.to_f
            break
          else
            queries+=1
@@ -42,8 +50,8 @@ class SphinxMonitor < Scout::Plugin
      
        if queries > 0 
          report_data[:num_queries] = queries
-         report_data[:average_query_time] = sprintf("%.2f", total_query_time/queries)
-         report_data[:average_results_returned] = sprintf("%.2f", total_results_returned/queries)
+         report_data[:average_query_time] = sprintf("%.4f", total_query_time/queries)
+         report_data[:average_results_returned] = sprintf("%.4f", total_results_returned/queries)
        end
      rescue Errno::ENOENT => error
        return error("Unable to find the query log file", "Could not find the query log at the specified path: #{option(:query_log_path)}.")
@@ -57,8 +65,8 @@ class SphinxMonitor < Scout::Plugin
      finish = nil
      begin
        Elif.foreach(search_log_path) do |line|
-         line_data = parse_query_line(line)
-         if line_data.timestamp.to_f <= last_run
+         line_data = parse_log_line(line)
+         if line_data.timestamp.to_f <= last_run.to_f
            break
          else
            if finish
@@ -75,19 +83,19 @@ class SphinxMonitor < Scout::Plugin
        
        if total_rotations > 0
          report_data[:index_rebuilds] = total_rotations
-         report_data[:average_time_per_rebuild] = sprintf("%.2f", total_rotations/total_length_rotations)
+         report_data[:average_time_per_rebuild] = sprintf("%.4f", total_length_rotations/total_rotations)
        end
      rescue Errno::ENOENT => error
        return error("Unable to find the searchd log file", "Could not find the searchd log at the specified path: #{option(:query_log_path)}.")
      rescue Exception => error
        return error("Error while processing searchd log:\n#{error.class}: #{error.message}", error.backtrace.join("\n"))
      end
+     # the time the
      remember(:last_request_time, Time.now)
      report(report_data)
   end
 private
 
-  #[Mon Dec 28 06:57:18.968 2009] 0.004 sec [ext/3/rel 1 (0,1000) @second_category_id] [main] @tags_delimited(incandescent lamping wall mount visa lighting northridge)
   QueryData = Struct.new(:timestamp, :time_spent, :results_returned)
   
   LogData = Struct.new(:timestamp, :step)
@@ -110,6 +118,17 @@ private
       :intermediate
     end
     LogData.new(Time.parse(time), step)
+  end
+  
+  #taken from rails monitor
+  #http://github.com/highgroove/scout-plugins/raw/master/rails_requests/rails_requests.rb
+  def patch_elif
+    if Elif::VERSION < "0.2.0"
+      Elif.send(:define_method, :pos) do
+        @current_pos +
+        @line_buffer.inject(0) { |bytes, line| bytes + line.size }
+      end
+    end
   end
   
 end

@@ -13,7 +13,7 @@ class SphinxMonitor < Scout::Plugin
      query_log_path =  option(:query_log_path)
      
      #change after testing
-     last_run = Time.now() - 14*3600 || memory(:last_request_time)
+     last_run = memory(:last_request_time) || Time.now
      
      #in seconds or amount/second
      report_data = {
